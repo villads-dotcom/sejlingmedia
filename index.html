@@ -305,6 +305,79 @@ img,svg,video{max-width:100%;height:auto}
 @media(max-width:520px){.result-summary{grid-template-columns:1fr}.result-shot-head{align-items:flex-start;gap:8px}.result-meta{display:grid}}
 </style>
 
+
+<style id="results-visibility-fix">
+.results-proof .result-summary.v9reveal,
+.results-proof .result-shot.v9reveal{
+  opacity:1;
+  transform:none;
+}
+</style>
+
+
+<style id="results-bigger-v3">
+.results-proof .wrap{max-width:1600px}
+.results-proof .result-comparison{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:34px;
+}
+.results-proof .result-shot{
+  width:100%;
+  overflow:hidden;
+  border:1px solid #ffffff12;
+  border-radius:20px;
+  background:#071119;
+}
+.results-proof .result-shot-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:20px 24px;
+}
+.results-proof .result-shot-head strong{
+  font-size:clamp(18px,2vw,25px);
+}
+.results-proof .result-shot img{
+  display:block;
+  width:100%;
+  height:auto;
+  min-height:0;
+  max-height:none;
+  object-fit:contain;
+  background:#fff;
+  cursor:zoom-in;
+}
+.results-proof .result-meta{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  padding:18px 22px 22px;
+}
+.results-proof .result-summary.v9reveal,
+.results-proof .result-shot.v9reveal{
+  opacity:1;
+  transform:none;
+}
+.result-image-lightbox{
+  display:none;position:fixed;inset:0;z-index:99999;
+  background:rgba(0,0,0,.94);padding:20px;
+  align-items:center;justify-content:center;cursor:zoom-out;
+}
+.result-image-lightbox.open{display:flex}
+.result-image-lightbox img{
+  display:block;
+  max-width:98vw;
+  max-height:96vh;
+  width:auto;
+  height:auto;
+  object-fit:contain;
+}
+@media(max-width:700px){
+  .results-proof .result-shot-head{align-items:flex-start;flex-direction:column;gap:8px}
+}
+</style>
+
 </head>
 <body>
 <header><div class="wrap"><nav>
@@ -449,17 +522,17 @@ img,svg,video{max-width:100%;height:auto}
 
     <div class="result-comparison">
       <article class="result-shot v9reveal">
-        <div class="result-shot-head"><span>MÅNED 1</span><strong>32 leads</strong></div>
-        <img src="/resultat-maaned-1.png" alt="Annoncekampagnens resultater i måned 1">
+        <div class="result-shot-head"><span>FØRSTE MÅNED</span><strong>Allerede første måned: 32 leads</strong></div>
+        <img src="https://sejlingmedia.com/resultat-maaned-1.png" alt="Annoncekampagnens resultater i måned 1">
         <div class="result-meta"><span>10.000 kr. annonceforbrug</span><span>312,50 kr. pr. lead</span><span>2,74% CTR</span></div>
       </article>
       <article class="result-shot v9reveal">
-        <div class="result-shot-head"><span>MÅNED 6</span><strong>89 leads</strong></div>
-        <img src="/resultat-maaned-6.png" alt="Annoncekampagnens resultater i måned 6">
+        <div class="result-shot-head"><span>MÅNED 6</span><strong>Månedligt: 89 leads</strong></div>
+        <img src="https://sejlingmedia.com/resultat-maaned-6.png" alt="Annoncekampagnens resultater i måned 6">
         <div class="result-meta"><span>20.000 kr. annonceforbrug</span><span>224,72 kr. pr. lead</span><span>3,13% CTR</span></div>
       </article>
     </div>
-    <p class="result-note">Resultaterne viser de viste kampagneperioder og er ikke en garanti for fremtidige resultater. Annonceforbruget var forskelligt i de to perioder.</p>
+    
   </div>
 </section>
 
@@ -642,5 +715,31 @@ img,svg,video{max-width:100%;height:auto}
 
 
 
+
+
+<div class="result-image-lightbox" id="resultLightbox" aria-hidden="true">
+  <img id="resultLightboxImage" alt="Forstørret kampagneresultat">
+</div>
+<script id="result-lightbox-js">
+(function(){
+  var box=document.getElementById('resultLightbox');
+  var large=document.getElementById('resultLightboxImage');
+  if(!box||!large)return;
+  document.querySelectorAll('.results-proof .result-shot img').forEach(function(img){
+    img.addEventListener('click',function(){
+      large.src=this.src;
+      box.classList.add('open');
+      box.setAttribute('aria-hidden','false');
+    });
+  });
+  box.addEventListener('click',function(){
+    box.classList.remove('open');
+    box.setAttribute('aria-hidden','true');
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape') box.click();
+  });
+})();
+</script>
 
 </body></html>
