@@ -20,6 +20,7 @@ main{width:min(1180px,calc(100% - 32px));margin:0 auto;padding:58px 0 80px;posit
 .success{padding:20px;border:1px solid #65caff35;border-radius:14px;background:#55c2ff0b;margin-top:20px}.success strong{font-size:18px}.success p{color:#8fa6b4;line-height:1.5}.mail{display:block;text-align:center;text-decoration:none;padding:14px;border-radius:11px;background:#fff;color:#071018;font-weight:800}
 @media(max-width:800px){header{height:72px}.logo{width:145px}.booking{grid-template-columns:1fr}.side{border-left:0;border-top:1px solid #ffffff10}.calendar,.side{padding:22px}.week,.days{gap:4px}.day{border-radius:9px}main{padding-top:38px}}
 </style>
+<link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet"><style>.calendly-booking{display:block}.calendly-inline-widget{border-radius:24px;overflow:hidden}</style>
 </head>
 <body>
 <header>
@@ -32,54 +33,12 @@ main{width:min(1180px,calc(100% - 32px));margin:0 auto;padding:58px 0 80px;posit
 <h1>Book en uforpligtende snak</h1>
 <p>Vælg en dato og et tidspunkt, der passer dig. Samtalen tager ca. 30 minutter, og vi tager udgangspunkt i din virksomhed og dine mål.</p>
 </div>
-<section class="booking">
-<div class="calendar">
-<div class="calendar-head"><button class="nav" id="prev" type="button">←</button><strong id="month"></strong><button class="nav" id="next" type="button">→</button></div>
-<div class="week"><span>Man</span><span>Tir</span><span>Ons</span><span>Tor</span><span>Fre</span><span>Lør</span><span>Søn</span></div>
-<div class="days" id="days"></div>
+<section class="booking calendly-booking">
+<div class="calendar" style="grid-column:1/-1;padding:0;min-height:760px">
+<div class="calendly-inline-widget" data-url="https://calendly.com/villads-sejlingmedia/30min?hide_gdpr_banner=1&background_color=071119&text_color=f4f9fc&primary_color=67caff" style="min-width:320px;height:760px"></div>
 </div>
-<aside class="side">
-<h2 id="sideTitle">Vælg en dato</h2>
-<p id="sideText">Når du har valgt en dag, kan du vælge et ledigt tidspunkt.</p>
-<div class="times" id="times"></div>
-<form class="form" id="form" hidden>
-<div class="slot" id="slot"></div>
-<label>Navn<input name="name" required autocomplete="name" placeholder="Dit navn"></label>
-<label>E-mail<input name="email" type="email" required autocomplete="email" placeholder="din@email.dk"></label>
-<label>Telefon<input name="phone" type="tel" autocomplete="tel" placeholder="+45 12 34 56 78"></label>
-<label>Virksomhed<input name="company" autocomplete="organization" placeholder="Virksomhedsnavn"></label>
-<button class="submit" type="submit">Book mødet →</button>
-<div class="note">Bookingkalenderen er klar som frontend. For live ledige tider og automatisk kalenderreservation skal den forbindes til din kalender/backend.</div>
-</form>
-<div class="success" id="success" hidden><strong>Klar til bekræftelse</strong><p id="successText"></p><a class="mail" id="mail" href="#">Send booking →</a></div>
-</aside>
 </section>
 </main>
-<script>
-(function(){
-var now=new Date(),view=new Date(now.getFullYear(),now.getMonth(),1),selected=null,chosen=null;
-var names=["januar","februar","marts","april","maj","juni","juli","august","september","oktober","november","december"];
-var available=["09:00","10:00","11:00","13:00","14:00","15:00","16:00"];
-var days=document.getElementById("days"),month=document.getElementById("month"),times=document.getElementById("times"),form=document.getElementById("form");
-function pad(n){return String(n).padStart(2,"0")} function key(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
-function render(){
- month.textContent=names[view.getMonth()]+" "+view.getFullYear();days.innerHTML="";
- var offset=(new Date(view.getFullYear(),view.getMonth(),1).getDay()+6)%7,total=new Date(view.getFullYear(),view.getMonth()+1,0).getDate(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
- for(var i=0;i<offset;i++){var e=document.createElement("button");e.className="day blank";e.disabled=true;days.appendChild(e)}
- for(let d=1;d<=total;d++){let date=new Date(view.getFullYear(),view.getMonth(),d),b=document.createElement("button");b.type="button";b.className="day";b.textContent=d;if(date<today||date.getDay()==0||date.getDay()==6)b.disabled=true;if(selected&&key(date)==key(selected))b.classList.add("selected");b.addEventListener("click",function(){selected=date;chosen=null;render();renderTimes()});days.appendChild(b)}
-}
-function renderTimes(){
- times.innerHTML="";form.hidden=true;document.getElementById("success").hidden=true;
- document.getElementById("sideTitle").textContent=selected?selected.toLocaleDateString("da-DK",{weekday:"long",day:"numeric",month:"long"}):"Vælg en dato";
- document.getElementById("sideText").textContent=selected?"Vælg et tidspunkt for din 30 minutters samtale.":"Når du har valgt en dag, kan du vælge et ledigt tidspunkt.";
- if(!selected)return;
- available.forEach(function(t){var b=document.createElement("button");b.type="button";b.className="time";b.textContent=t;b.addEventListener("click",function(){chosen=t;times.querySelectorAll("button").forEach(function(x){x.classList.remove("selected")});b.classList.add("selected");form.hidden=false;document.getElementById("slot").textContent=selected.toLocaleDateString("da-DK",{weekday:"long",day:"numeric",month:"long",year:"numeric"})+" kl. "+t});times.appendChild(b)})
-}
-document.getElementById("prev").addEventListener("click",function(){var n=new Date(view.getFullYear(),view.getMonth()-1,1),min=new Date(now.getFullYear(),now.getMonth(),1);if(n>=min){view=n;render()}});
-document.getElementById("next").addEventListener("click",function(){view=new Date(view.getFullYear(),view.getMonth()+1,1);render()});
-form.addEventListener("submit",function(e){e.preventDefault();if(!selected||!chosen)return;var f=new FormData(form),when=selected.toLocaleDateString("da-DK",{weekday:"long",day:"numeric",month:"long",year:"numeric"})+" kl. "+chosen,body="Hej Sejling Media,\n\nJeg vil gerne booke et uforpligtende møde "+when+".\n\nNavn: "+f.get("name")+"\nE-mail: "+f.get("email")+"\nTelefon: "+f.get("phone")+"\nVirksomhed: "+f.get("company");document.getElementById("successText").textContent="Du har valgt "+when+".";document.getElementById("mail").href="mailto:kontakt@sejlingmedia.dk?subject="+encodeURIComponent("Mødebooking – "+when)+"&body="+encodeURIComponent(body);form.hidden=true;times.style.display="none";document.getElementById("success").hidden=false});
-render();
-})();
-</script>
+<script src="https://assets.calendly.com/assets/external/widget.js" async></script>
 </body>
 </html>
