@@ -434,6 +434,26 @@ a.btn:active{transform:translateY(0) scale(.98)}
 }
 </style>
 
+
+<style id="smooth-scroll-final">
+html{
+  scroll-behavior:smooth !important;
+  scroll-padding-top:110px;
+}
+section[id], [id="kontakt"], [id="services"], [id="proces"], [id="cases"], [id="om"], [id="resultater"], [id="no-cure-no-pay"]{
+  scroll-margin-top:110px;
+}
+@media (max-width:900px){
+  html{scroll-padding-top:90px}
+  section[id], [id="kontakt"], [id="services"], [id="proces"], [id="cases"], [id="om"], [id="resultater"], [id="no-cure-no-pay"]{
+    scroll-margin-top:90px;
+  }
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto !important}
+}
+</style>
+
 </head>
 <body>
 <header><div class="wrap"><nav>
@@ -840,26 +860,6 @@ a.btn:active{transform:translateY(0) scale(.98)}
       },{threshold:.12,rootMargin:'0px 0px -8% 0px'});
       animated.forEach(function(el){observer.observe(el)});
     }
-
-    /* Smooth anchor navigation, including header offset. */
-    document.addEventListener('click',function(e){
-      var link=e.target.closest('a[href^="#"]');
-      if(!link)return;
-
-      var href=link.getAttribute('href');
-      if(!href || href==='#')return;
-
-      var target=document.querySelector(href);
-      if(!target)return;
-
-      e.preventDefault();
-      var header=document.querySelector('header');
-      var offset=(header ? header.offsetHeight : 0)+18;
-      var y=target.getBoundingClientRect().top+window.pageYOffset-offset;
-
-      window.scrollTo({top:y,behavior:'smooth'});
-      if(history.pushState) history.pushState(null,'',href);
-    });
   }
 
   if(document.readyState==='loading'){
