@@ -378,6 +378,62 @@ img,svg,video{max-width:100%;height:auto}
 }
 </style>
 
+
+<style id="scroll-motion-v15">
+html{
+  scroll-behavior:smooth;
+  scroll-padding-top:100px;
+}
+
+/* Sections and content gently enter as the visitor scrolls */
+.scroll-enter{
+  opacity:0;
+  transform:translateY(34px);
+  transition:
+    opacity .8s cubic-bezier(.2,.75,.2,1),
+    transform .8s cubic-bezier(.2,.75,.2,1);
+  will-change:opacity,transform;
+}
+.scroll-enter.from-left{transform:translateX(-34px)}
+.scroll-enter.from-right{transform:translateX(34px)}
+.scroll-enter.is-visible{
+  opacity:1;
+  transform:none;
+}
+
+/* Small stagger for groups such as services, process, cases and results */
+.scroll-stagger > *{
+  opacity:0;
+  transform:translateY(26px);
+  transition:
+    opacity .65s cubic-bezier(.2,.75,.2,1),
+    transform .65s cubic-bezier(.2,.75,.2,1);
+}
+.scroll-stagger.is-visible > *{
+  opacity:1;
+  transform:none;
+}
+.scroll-stagger.is-visible > *:nth-child(1){transition-delay:.03s}
+.scroll-stagger.is-visible > *:nth-child(2){transition-delay:.10s}
+.scroll-stagger.is-visible > *:nth-child(3){transition-delay:.17s}
+.scroll-stagger.is-visible > *:nth-child(4){transition-delay:.24s}
+.scroll-stagger.is-visible > *:nth-child(5){transition-delay:.31s}
+.scroll-stagger.is-visible > *:nth-child(6){transition-delay:.38s}
+
+/* Smooth press feedback without changing the site's design */
+a.btn{transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease}
+a.btn:active{transform:translateY(0) scale(.98)}
+
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .scroll-enter,.scroll-stagger>*{
+    opacity:1!important;
+    transform:none!important;
+    transition:none!important;
+  }
+}
+</style>
+
 </head>
 <body>
 <header><div class="wrap"><nav>
@@ -523,12 +579,12 @@ img,svg,video{max-width:100%;height:auto}
     <div class="result-comparison">
       <article class="result-shot v9reveal">
         <div class="result-shot-head"><span>FØRSTE MÅNED</span><strong>Allerede første måned: 32 leads</strong></div>
-        <img src="./resultat-maaned-1.png" alt="Annoncekampagnens resultater i måned 1">
+        <img src="https://sejlingmedia.com/resultat-maaned-1.png" alt="Annoncekampagnens resultater i måned 1">
         <div class="result-meta"><span>10.000 kr. annonceforbrug</span><span>312,50 kr. pr. lead</span><span>2,74% CTR</span></div>
       </article>
       <article class="result-shot v9reveal">
         <div class="result-shot-head"><span>MÅNED 6</span><strong>Månedligt: 89 leads</strong></div>
-        <img src="./resultat-maaned-6.png" alt="Annoncekampagnens resultater i måned 6">
+        <img src="https://sejlingmedia.com/resultat-maaned-6.png" alt="Annoncekampagnens resultater i måned 6">
         <div class="result-meta"><span>20.000 kr. annonceforbrug</span><span>224,72 kr. pr. lead</span><span>3,13% CTR</span></div>
       </article>
     </div>
@@ -739,6 +795,78 @@ img,svg,video{max-width:100%;height:auto}
   document.addEventListener('keydown',function(e){
     if(e.key==='Escape') box.click();
   });
+})();
+</script>
+
+
+<script id="scroll-motion-v15-js">
+(function(){
+  function initScrollMotion(){
+    /* Existing-page elements only: no content/layout changes */
+    var singles = document.querySelectorAll(
+      '.section > .wrap > .eyebrow,' +
+      '.section > .wrap > h2,' +
+      '.section > .wrap > .section-intro,' +
+      '.split > .photo,' +
+      '.split > div:last-child,' +
+      '.performance-copy,.performance-card,' +
+      '.results-proof .eyebrow,.results-proof h2,.results-proof .section-intro,' +
+      '.cta-row'
+    );
+
+    singles.forEach(function(el, i){
+      el.classList.add('scroll-enter');
+      if(el.classList.contains('photo')) el.classList.add('from-left');
+      if(el.classList.contains('performance-card')) el.classList.add('from-right');
+    });
+
+    var groups = document.querySelectorAll(
+      '.services,.steps,.cases,.testimonials,.result-summary,.result-comparison,.performance-points'
+    );
+    groups.forEach(function(el){ el.classList.add('scroll-stagger'); });
+
+    var animated = document.querySelectorAll('.scroll-enter,.scroll-stagger');
+
+    if(!('IntersectionObserver' in window)){
+      animated.forEach(function(el){el.classList.add('is-visible')});
+    }else{
+      var observer = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(entry.isIntersecting){
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },{threshold:.12,rootMargin:'0px 0px -8% 0px'});
+      animated.forEach(function(el){observer.observe(el)});
+    }
+
+    /* Smooth anchor navigation, including header offset. */
+    document.addEventListener('click',function(e){
+      var link=e.target.closest('a[href^="#"]');
+      if(!link)return;
+
+      var href=link.getAttribute('href');
+      if(!href || href==='#')return;
+
+      var target=document.querySelector(href);
+      if(!target)return;
+
+      e.preventDefault();
+      var header=document.querySelector('header');
+      var offset=(header ? header.offsetHeight : 0)+18;
+      var y=target.getBoundingClientRect().top+window.pageYOffset-offset;
+
+      window.scrollTo({top:y,behavior:'smooth'});
+      if(history.pushState) history.pushState(null,'',href);
+    });
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',initScrollMotion,{once:true});
+  }else{
+    initScrollMotion();
+  }
 })();
 </script>
 
